@@ -1,100 +1,140 @@
 package org.example;
 
-import org.example.model.Car;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.example.controller.CarController;
+import org.example.repository.CarRepository;
+import org.example.service.CarService;
 import java.util.Scanner;
 
 public class Main {
 
-    static int ID = 1;
-
-    public static int idCounter() {
-        return ID++;
-    }
-
     public static void main(String[] args) {
 
-
-
-        Car c1 = new Car(idCounter(), "nissan", 2020, 10000); //0xy64783264932
-        Car c2 = new Car(idCounter(), "tesla", 2025, 50000); //0x8272189109880
-        Car c3 = new Car(idCounter(), "ford", 2019, 10500);
-        List<Car> cars = new ArrayList<>();
-        cars.add(c1);
-        cars.add(c2);
-        cars.add(c3);
+        CarRepository carRepository = new CarRepository();
+        CarService carService = new CarService(carRepository);
+        CarController carController = new CarController(carService);
 
         Scanner sc = new Scanner(System.in);
         int option;
 
         do {
 
-            System.out.println("select an option: (1) Get All Cars.   (2) Get Car by Id   (3) Create New Car   (6) Finish");
-            option = sc.nextInt();
-            sc.nextLine(); // limpiar buffer
+            System.out.println("\n===== CAR SYSTEM =====");
+            System.out.println("(1) Get All Cars");
+            System.out.println("(2) Get Car by Id");
+            System.out.println("(3) Create New Car");
+            System.out.println("(4) Get Cars by Year");
+            System.out.println("(5) Update Car");
+            System.out.println("(6) Delete Car");
+            System.out.println("(7) Exit");
 
+            System.out.print("Select option: ");
+            option = sc.nextInt();
+            sc.nextLine();
 
             switch (option) {
 
+                // READ ALL
                 case 1:
-                    Main.getAllCars(cars);
+                    System.out.println("\nAll Cars:");
+                    System.out.println(carController.getAllCars());
                     break;
 
+                // READ BY ID
                 case 2:
-                    System.out.println("id car: ");
+                    System.out.print("\nEnter car ID: ");
                     int idCar = sc.nextInt();
-                    System.out.println(Main.getCarById(cars, idCar));
+                    sc.nextLine();
+
+                    System.out.println(carController.getCarById(idCar));
                     break;
 
+                // CREATE
                 case 3:
-                    System.out.println("\nWrite the model: ");
+                    System.out.print("\nModel: ");
                     String model = sc.nextLine();
-                    System.out.println("\nWrite the year: ");
+
+                    System.out.print("Year: ");
                     int year = sc.nextInt();
                     sc.nextLine();
-                    System.out.println("\nWrite the price: ");
+
+                    System.out.print("Price: ");
                     double price = sc.nextDouble();
                     sc.nextLine();
 
-                    addNewCar(cars, model, year, price);
+                    carController.createCar(model, year, price);
+
+                    System.out.println("Car created successfully.");
                     break;
 
+                // READ BY YEAR
                 case 4:
+                    System.out.print("\nEnter year: ");
+                    int searchYear = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.println(carController.getCarByYear(searchYear));
+                    break;
+
+                // UPDATE
+                case 5:
+                    System.out.print("\nEnter car ID to update: ");
+                    int updateId = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("New model: ");
+                    String newModel = sc.nextLine();
+
+                    System.out.print("New year: ");
+                    int newYear = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("New price: ");
+                    double newPrice = sc.nextDouble();
+                    sc.nextLine();
+
+                    boolean updated = carController.updateCar(
+                            updateId,
+                            newModel,
+                            newYear,
+                            newPrice
+                    );
+
+                    if (updated) {
+                        System.out.println("Car updated successfully.");
+                    } else {
+                        System.out.println("Car not found.");
+                    }
 
                     break;
 
+                // DELETE
                 case 6:
-                    System.out.println("bye");
+                    System.out.print("\nEnter car ID to delete: ");
+                    int deleteId = sc.nextInt();
+                    sc.nextLine();
+
+                    boolean deleted = carController.deleteCar(deleteId);
+
+                    if (deleted) {
+                        System.out.println("Car deleted successfully.");
+                    } else {
+                        System.out.println("Car not found.");
+                    }
+
+                    break;
+
+                // EXIT
+                case 7:
+                    System.out.println("Bye 👋");
                     break;
 
                 default:
-                    System.out.println("invalid");
+                    System.out.println("Invalid option.");
                     break;
             }
-        } while(option != 6);
 
+        } while (option != 7);
+
+        sc.close();
     }
-
-    public static void getAllCars(List<Car> cars) {
-        for (Car car : cars) {
-            System.out.println(car);
-        }
-    }
-
-    public static Car getCarById(List<Car> cars, int id) {
-        for( Car car : cars ) {
-            if (car.getId() == id) {
-                return car;
-            }
-        }
-        return null;
-    }
-
-    public static void addNewCar(List<Car> cars, String model, int year, double price) {
-        cars.add(new Car(idCounter(), model, year, price));
-        System.out.println("The car " + model + " was added");
-    }
-
 }
