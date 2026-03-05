@@ -8,7 +8,7 @@ import java.util.List;
 public class CarService {
 
     private CarRepository carRepository;
-    private int nextId = 4; // Ya tienes 3 carros creados
+    private int nextId = 4;
 
     public CarService(CarRepository carRepository) {
         this.carRepository = carRepository;
